@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, StatusBar } from 'react-native';
 import Weather from "./Weather";
 
-const API_KEY = "241051bf13976dd3ddf8b8d9f247255e";
+const API_KEY = "c722e116e8ca363e62347f08ddc79d3c";
 const WEATHER_API = "https://api.openweathermap.org/data/2.5/weather?";
 
 export default class App extends Component {
@@ -15,10 +15,7 @@ export default class App extends Component {
   componentDidMount(){
     navigator.geolocation.getCurrentPosition(
       position => {
-        this.setState({
-          isLoaded: true,
-          error: "ね、、眠い、、鍵よろしく、、バタッ"
-        });
+        this.__getWeather(position.coords.latitude, position.coords.longitude);
       },
       error => {
         this.setState({
@@ -30,9 +27,7 @@ export default class App extends Component {
 
   __getWeather = (lat, long) => {
     fetch(
-      `${WEATHER_API}lat=${coords.lat}&lon=${
-        coords.lng
-      }&appid=${API_KEY}&units=metric`
+      `${WEATHER_API}lat=${lat}&lon=${long}&appid=${API_KEY}&units=metric`
     )
     .then(response => response.json())
     .then(json => {
@@ -44,12 +39,12 @@ export default class App extends Component {
   });
   };
   render() {
-    const { isLoaded, error } = this.state;
+    const { isLoaded, error, temperature, name } = this.state;
     return (
       <View style={styles.container}>
       <StatusBar hidden={true} />
        {isLoaded ? (
-       <Weather /> 
+       <Weather weatherName={name} temp={Math.floor(temperature)} /> 
        ): (
          <View style={styles.loading}>
         <Text style={styles.loadingUpText}>ちゃなー😮！</Text> 
@@ -80,14 +75,14 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   loadingUpText: {
-    fontSize: 40,
+    fontSize: 35,
     color: "white",
     backgroundColor: "transparent",
     marginBottom: 20,
     fontWeight: "300"
 },
   loadingLwText: {
-    fontSize: 28,
+    fontSize: 25,
     color: "white",
     backgroundColor: "transparent",
     marginBottom: 80
